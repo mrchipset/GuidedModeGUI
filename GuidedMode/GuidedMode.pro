@@ -32,7 +32,8 @@ HEADERS += \
         sGuidedMode.h
 
 FORMS += \
-        sGuidedMode.ui
+        sGuidedMode.ui \
+    ssettingwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

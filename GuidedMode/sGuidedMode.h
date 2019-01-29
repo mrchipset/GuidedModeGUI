@@ -2,7 +2,7 @@
 #define SGUIDEDMODE_H
 
 #include <QMainWindow>
-
+#include <QMessageBox>
 namespace Ui {
 class SGuidedMode;
 }
@@ -17,6 +17,11 @@ public:
 
 private:
     Ui::SGuidedMode *ui;
+
+private slots:
+    void ON_MENUBAR_ABOUT_CLICKED();//启动说明程序
+    void ON_MENUBAR_SETTING_CLICKED();
+
 };
 
 #endif // SGUIDEDMODE_H
