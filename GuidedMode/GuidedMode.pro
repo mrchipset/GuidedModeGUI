@@ -46,3 +46,6 @@ win32: LIBS += -L$$PWD/../../../Lib/Armadillo/lib/ -llibarmadillo.dll
 
 INCLUDEPATH += $$PWD/../../../Lib/Armadillo/include
 DEPENDPATH += $$PWD/../../../Lib/Armadillo/include
+
+RESOURCES += \
+    defaultresource.qrc
