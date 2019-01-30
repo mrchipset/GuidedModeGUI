@@ -23,7 +23,7 @@ void SGuidedMode::ON_MENUBAR_ABOUT_CLICKED()
     QMessageBox::information(this, tr("About"),
                              tr("Guided Mode Calculation Tool\n"
                                 "Developer:\tX.F.Zhou\nEmail:\txfzhou233@gmail.com\n"
-                                "Copyright© X.F.Zhou 2019"));
+                                "Copyright© 2018-2019 X.F.Zhou\nAll rights reserved."));
 }
 
 void SGuidedMode::ON_MENUBAR_SETTING_CLICKED()

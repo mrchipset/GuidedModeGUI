@@ -17,6 +17,8 @@ public:
 
 private:
     Ui::SSettingDialog *ui;
+private slots:
+    void on_UI_PB_CONFIRM_CLICKED();
 };
 
 #endif // SSETTINGDIALOG_H

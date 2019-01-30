@@ -7,9 +7,15 @@ SSettingDialog::SSettingDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     setWindowFlag(Qt::WindowContextHelpButtonHint,false);//Close the help button.
+    connect(ui->UI_PB_CONFIRM, SIGNAL(clicked()), this, SLOT(on_UI_PB_CONFIRM_CLICKED()));
 }
 
 SSettingDialog::~SSettingDialog()
 {
     delete ui;
+}
+
+void SSettingDialog::on_UI_PB_CONFIRM_CLICKED()
+{
+    close();
 }
