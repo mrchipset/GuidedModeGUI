@@ -26,14 +26,16 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        sGuidedMode.cpp
+        sGuidedMode.cpp \
+    sSettingDialog.cpp
 
 HEADERS += \
-        sGuidedMode.h
+        sGuidedMode.h \
+    sSettingDialog.h
 
 FORMS += \
         sGuidedMode.ui \
-    ssettingwindow.ui
+    sSettingDialog.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
