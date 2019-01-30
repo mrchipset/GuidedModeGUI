@@ -21,8 +21,9 @@ SGuidedMode::~SGuidedMode()
 void SGuidedMode::ON_MENUBAR_ABOUT_CLICKED()
 {
     QMessageBox::information(this, tr("About"),
-                             tr("波导传播模计算程序\n"
-                                "开发者:\tX.F.Zhou\n联系:\txfzhou233@gmail.com"));
+                             tr("Guided Mode Calculation Tool\n"
+                                "Developer:\tX.F.Zhou\nEmail:\txfzhou233@gmail.com\n"
+                                "Copyright© X.F.Zhou 2019"));
 }
 
 void SGuidedMode::ON_MENUBAR_SETTING_CLICKED()
