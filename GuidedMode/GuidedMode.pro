@@ -28,12 +28,14 @@ SOURCES += \
         main.cpp \
         sGuidedMode.cpp \
     sSettingDialog.cpp \
-    cGloabalParam.cpp
+    cGloabalParam.cpp \
+    Tools/sThread.cpp
 
 HEADERS += \
         sGuidedMode.h \
     sSettingDialog.h \
-    cGloabalParam.h
+    cGloabalParam.h \
+    Tools/sThread.h
 
 FORMS += \
         sGuidedMode.ui \

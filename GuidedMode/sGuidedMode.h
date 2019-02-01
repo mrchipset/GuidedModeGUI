@@ -8,6 +8,7 @@
 
 #include "sSettingDialog.h"
 #include "cGloabalParam.h"
+#include "Tools/sThread.h"
 
 namespace Ui {
 class SGuidedMode;
@@ -27,7 +28,6 @@ private:
     QString openedName;
     void loadParams();
     void readParams();
-
 private slots:
     void ON_MENUBAR_ABOUT_CLICKED();//启动说明程序
 //    void ON_MENUBAR_SETTING_CLICKED();
