@@ -27,11 +27,13 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
         sGuidedMode.cpp \
-    sSettingDialog.cpp
+    sSettingDialog.cpp \
+    cGloabalParam.cpp
 
 HEADERS += \
         sGuidedMode.h \
-    sSettingDialog.h
+    sSettingDialog.h \
+    cGloabalParam.h
 
 FORMS += \
         sGuidedMode.ui \

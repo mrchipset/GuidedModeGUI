@@ -2,6 +2,7 @@
 #define SSETTINGDIALOG_H
 
 #include <QDialog>
+#include "cGloabalParam.h"
 
 namespace Ui {
 class SSettingDialog;
@@ -17,8 +18,8 @@ public:
 
 private:
     Ui::SSettingDialog *ui;
-private slots:
-    void on_UI_PB_CONFIRM_CLICKED();
+public slots:
+    void ON_UI_PB_CONFIRM_CLICKED();
 };
 
 #endif // SSETTINGDIALOG_H

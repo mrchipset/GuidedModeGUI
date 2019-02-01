@@ -478,6 +478,9 @@
      <string>File</string>
     </property>
     <widget class="QMenu" name="menuExport">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="title">
       <string>Export</string>
      </property>

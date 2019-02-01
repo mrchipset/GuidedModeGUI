@@ -7,7 +7,14 @@ SSettingDialog::SSettingDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     setWindowFlag(Qt::WindowContextHelpButtonHint,false);//Close the help button.
-    connect(ui->UI_PB_CONFIRM, SIGNAL(clicked()), this, SLOT(on_UI_PB_CONFIRM_CLICKED()));
+
+    //load the saved system settings
+    ui->UI_CB_THREADS->setCurrentIndex(CGloabalParam::COCURRENT);
+    ui->UI_CB_LANG->setCurrentIndex(CGloabalParam::SYSTEM_LANG);
+    ui->UI_LE_SAVEPTS->setText(QString::number(CGloabalParam::SAVE_DATA_PTS));
+    ui->UI_CB_FREQ_ACCURACY->setCurrentIndex(CGloabalParam::FREQ_ACCURACY);
+    //bind signal and slots
+    connect(ui->UI_PB_CONFIRM, SIGNAL(clicked()), this, SLOT(ON_UI_PB_CONFIRM_CLICKED()));
 }
 
 SSettingDialog::~SSettingDialog()
@@ -15,7 +22,15 @@ SSettingDialog::~SSettingDialog()
     delete ui;
 }
 
-void SSettingDialog::on_UI_PB_CONFIRM_CLICKED()
+void SSettingDialog::ON_UI_PB_CONFIRM_CLICKED()
 {
+    CGloabalParam::GLOBAL_PARAM_MUTEX.lock();
+    CGloabalParam::FREQ_ACCURACY = ui->UI_CB_FREQ_ACCURACY->currentIndex();
+    CGloabalParam::COCURRENT = ui->UI_CB_THREADS->currentIndex();
+    CGloabalParam::SAVE_DATA_PTS = ui->UI_LE_SAVEPTS->text().toInt();
+    CGloabalParam::SYSTEM_LANG = ui->UI_CB_LANG->currentIndex();
+    CGloabalParam::GLOBAL_PARAM_MUTEX.unlock();
     close();
 }
+
+
