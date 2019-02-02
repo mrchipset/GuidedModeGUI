@@ -6,8 +6,11 @@
 #include <QFileDialog>
 #include <QDebug>
 
+#include <qwt_plot.h>
+
 #include "sSettingDialog.h"
 #include "cGloabalParam.h"
+#include "sChartWidget.h"
 #include "Tools/sThread.h"
 
 namespace Ui {
@@ -25,9 +28,12 @@ public:
 private:
     Ui::SGuidedMode *ui;
     SSettingDialog *settingDialog;
+    SChartWidget *sPlotWidget;
+
     QString openedName;
     void loadParams();
     void readParams();
+
 private slots:
     void ON_MENUBAR_ABOUT_CLICKED();//启动说明程序
 //    void ON_MENUBAR_SETTING_CLICKED();

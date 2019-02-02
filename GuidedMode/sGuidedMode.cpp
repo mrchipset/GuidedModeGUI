@@ -10,17 +10,11 @@ SGuidedMode::SGuidedMode(QWidget *parent) :
 
     //Load the System Setting
     CGloabalParam::loadSysSetting();
-    sThread[0].sSetUserFunc(sFunc1);
-    sThread[1].sSetUserFunc(sFunc2);
-    for(int i=0;i<3;i++)
-    {
-    sThread[0].start();
-    sThread[1].start();
-    QThread::msleep(100);
-    sThread[0].sStop();
-    sThread[1].sStop();
-    }
+    //Initilize the UI
     settingDialog = new SSettingDialog(this);
+    sPlotWidget = new SChartWidget(ui->UI_PLOT_WIDGET);
+
+    //Bind signal and slots.
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(ON_MENUBAR_ABOUT_CLICKED()));
     connect(ui->menuSetting, SIGNAL(aboutToShow()), settingDialog, SLOT(show()));
     connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(ON_MENUBAR_ACTION_OPEN()));
@@ -28,25 +22,6 @@ SGuidedMode::SGuidedMode(QWidget *parent) :
     connect(ui->actionSave_as, SIGNAL(triggered()), this, SLOT(ON_MENUBAR_ACTION_SAVE_AS()));
 }
 
-int SGuidedMode::sFunc1(void* pParam, bool const & bRunning)
-{
-    while(bRunning)
-    {
-        qDebug()<<"SFUNC1";
-        QThread::msleep(500);
-    }
-    return 0;
-}
-
-int SGuidedMode::sFunc2(void* pParam, bool const & bRunning)
-{
-    while(bRunning)
-    {
-        qDebug()<<"SFUNC2";
-        QThread::msleep(500);
-    }
-    return 0;
-}
 
 SGuidedMode::~SGuidedMode()
 {

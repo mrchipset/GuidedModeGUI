@@ -29,13 +29,15 @@ SOURCES += \
         sGuidedMode.cpp \
     sSettingDialog.cpp \
     cGloabalParam.cpp \
-    Tools/sThread.cpp
+    Tools/sThread.cpp \
+    sChartWidget.cpp
 
 HEADERS += \
         sGuidedMode.h \
     sSettingDialog.h \
     cGloabalParam.h \
-    Tools/sThread.h
+    Tools/sThread.h \
+    sChartWidget.h
 
 FORMS += \
         sGuidedMode.ui \
@@ -50,6 +52,8 @@ win32: LIBS += -L$$PWD/../../../Lib/Armadillo/lib/ -llibarmadillo.dll
 
 INCLUDEPATH += $$PWD/../../../Lib/Armadillo/include
 DEPENDPATH += $$PWD/../../../Lib/Armadillo/include
+
+include(D:/Lib/Qwt-6.1.4/features/qwt.prf)
 
 RESOURCES += \
     defaultresource.qrc
