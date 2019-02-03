@@ -7,8 +7,9 @@ SChartWidget::SChartWidget(QWidget *parent) : QWidget(parent)
     mQwtPlot->setCanvasBackground(QBrush(QColor(255,255,255)));
     mQwtPlot->move(0,0);
     mQwtPlot->resize(parent->width(),parent->height());
-    mQwtPlot->setAxisTitle(QwtPlot::yLeft, tr("Beta"));
-    mQwtPlot->setAxisTitle(QwtPlot::xBottom, tr("Omiga"));
+    mQwtPlot->setAxisTitle(QwtPlot::yLeft, tr("Omiga"));
+    mQwtPlot->setAxisTitle(QwtPlot::xBottom, tr("Beta"));
+    mQwtPlot->setTitle(tr("Dispersion Curve Chart"));
 
     //Initilize the Qwt Plot Curves
     mQwtScatter = new QwtPlotCurve(tr("Scatter"));
@@ -26,6 +27,9 @@ SChartWidget::SChartWidget(QWidget *parent) : QWidget(parent)
 
 SChartWidget::~SChartWidget()
 {
+    //Clear the grating vectical lines.
+    clearGratingLines();
+
     if(mPointXQVec != nullptr)
         delete mPointXQVec;
     mPointXQVec = nullptr;
@@ -61,3 +65,28 @@ void SChartWidget::setSamples(QVector<QPointF> const& samples)
     mPlotMutex.unlock();
 }
 
+void SChartWidget::addGratingLine(double const x)
+{
+    mPlotMutex.lock();
+    QwtPlotMarker * pLine = new QwtPlotMarker;
+    pLine->setLineStyle(QwtPlotMarker::VLine);
+    pLine->setLinePen(QPen(Qt::blue, 1, Qt::DashDotDotLine));
+    pLine->setXValue(x);
+    pLine->attach(mQwtPlot);
+    mGratingLines.append(pLine);
+    mQwtPlot->replot();
+    mPlotMutex.unlock();
+}
+
+void SChartWidget::clearGratingLines()
+{
+    mPlotMutex.lock();
+    for(auto var : mGratingLines)
+    {
+        if(var)
+            delete var;
+        var = nullptr;
+    }
+    mGratingLines.clear();
+    mPlotMutex.unlock();
+}

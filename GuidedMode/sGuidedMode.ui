@@ -486,6 +486,7 @@
      </property>
      <addaction name="actionCSV"/>
      <addaction name="actionTXT"/>
+     <addaction name="actionPNG"/>
     </widget>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
@@ -550,6 +551,11 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionPNG">
+   <property name="text">
+    <string>PNG</string>
    </property>
   </action>
  </widget>

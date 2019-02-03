@@ -5,10 +5,12 @@
 #include <QWidget>
 #include <QMutex>
 #include <QVector>
+#include <QList>
 #include <QPointF>
 
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
+#include <qwt_plot_marker.h>
 #include <qwt_plot_zoomer.h>
 #include <qwt_plot_picker.h>
 
@@ -20,6 +22,8 @@ public:
     ~SChartWidget();
 public:
     void setSamples(QVector<QPointF> const& samples);
+    void addGratingLine(double const x);
+    void clearGratingLines();
 private:
     QwtPlot *mQwtPlot;
     QwtPlotCurve *mQwtScatter;
@@ -30,6 +34,7 @@ private:
 private:
     QVector<double> *mPointXQVec;
     QVector<double> *mPointYQVec;
+    QList<QwtPlotMarker*> mGratingLines;
 signals:
 
 public slots:
