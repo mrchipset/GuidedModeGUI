@@ -18,18 +18,37 @@ class SChartWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit SChartWidget(QWidget *parent = nullptr);
+    static SChartWidget * GetInstance(QWidget *parent = nullptr);
     ~SChartWidget();
+private:
+    explicit SChartWidget(QWidget *parent = nullptr);
+    static SChartWidget * mInstance;
+    class GC{
+        public:
+            ~GC(){
+                SChartWidget::mInstanceMutex.lock();
+                if(SChartWidget::mInstance != nullptr)
+                    SChartWidget::mInstance->sClean();//Crashed when call deconstructor.
+                SChartWidget::mInstanceMutex.unlock();
+                SChartWidget::mInstance = nullptr;
+
+            }
+    };
+    static GC Gc;
+
 public:
+
     void setSamples(QVector<QPointF> const& samples);
     void addGratingLine(double const x);
     void clearGratingLines();
+    void sClean();
 private:
     QwtPlot *mQwtPlot;
     QwtPlotCurve *mQwtScatter;
     QwtPlotZoomer *mQwtZoomer;
     QwtPlotPicker *mQwtPicker;
     QMutex mPlotMutex;
+    static QMutex mInstanceMutex;
 
 private:
     QVector<double> *mPointXQVec;

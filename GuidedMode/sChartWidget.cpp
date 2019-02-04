@@ -1,5 +1,18 @@
 #include "sChartWidget.h"
 
+
+SChartWidget * SChartWidget::mInstance = nullptr;
+SChartWidget::GC SChartWidget::Gc;
+QMutex SChartWidget::mInstanceMutex;
+SChartWidget * SChartWidget::GetInstance(QWidget *parent)
+{
+    mInstanceMutex.lock();
+    if(SChartWidget::mInstance == nullptr)
+        SChartWidget::mInstance = new SChartWidget(parent);
+    mInstanceMutex.unlock();
+    return SChartWidget::mInstance;
+}
+
 SChartWidget::SChartWidget(QWidget *parent) : QWidget(parent)
 {
     //Initilize the QwtPlot and resize to fit the plot widget.
@@ -25,10 +38,26 @@ SChartWidget::SChartWidget(QWidget *parent) : QWidget(parent)
     mPointYQVec = new QVector<double>();
 }
 
+
+void SChartWidget::sClean()
+{
+    mPlotMutex.lock();
+    //Clear the grating vectical lines.
+    //clearGratingLines();
+    if(mPointXQVec != nullptr)
+        delete mPointXQVec;
+    mPointXQVec = nullptr;
+    if(mPointYQVec != nullptr)
+        delete mPointYQVec;
+    mPointYQVec = nullptr;
+    mPlotMutex.unlock();
+
+}
+
 SChartWidget::~SChartWidget()
 {
-    //Clear the grating vectical lines.
-    clearGratingLines();
+//    //Clear the grating vectical lines.
+//    clearGratingLines();
 
     if(mPointXQVec != nullptr)
         delete mPointXQVec;
@@ -37,17 +66,17 @@ SChartWidget::~SChartWidget()
         delete mPointYQVec;
     mPointYQVec = nullptr;
 
-    if(mQwtPicker != nullptr)
-        delete mQwtPicker;
-    mQwtPicker = nullptr;
-    if(mQwtZoomer != nullptr)
-        delete mQwtZoomer;
-    mQwtZoomer = nullptr;
-    if(mQwtScatter != nullptr)
-        delete mQwtScatter;
-    if(mQwtPlot != nullptr)
-        delete mQwtPlot;
-    mQwtPlot = nullptr;
+//    if(mQwtPicker != nullptr)
+//        delete mQwtPicker;
+//    mQwtPicker = nullptr;
+//    if(mQwtZoomer != nullptr)
+//        delete mQwtZoomer;
+//    mQwtZoomer = nullptr;
+//    if(mQwtScatter != nullptr)
+//        delete mQwtScatter;
+//    if(mQwtPlot != nullptr)
+//        delete mQwtPlot;
+//    mQwtPlot = nullptr;
 }
 
 void SChartWidget::setSamples(QVector<QPointF> const& samples)

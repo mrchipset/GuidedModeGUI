@@ -30,14 +30,16 @@ SOURCES += \
     sSettingDialog.cpp \
     cGloabalParam.cpp \
     Tools/sThread.cpp \
-    sChartWidget.cpp
+    sChartWidget.cpp \
+    sCoreComputation.cpp
 
 HEADERS += \
         sGuidedMode.h \
     sSettingDialog.h \
     cGloabalParam.h \
     Tools/sThread.h \
-    sChartWidget.h
+    sChartWidget.h \
+    sCoreComputation.h
 
 FORMS += \
         sGuidedMode.ui \

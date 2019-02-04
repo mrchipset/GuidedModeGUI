@@ -12,8 +12,8 @@ SGuidedMode::SGuidedMode(QWidget *parent) :
     CGloabalParam::loadSysSetting();
     //Initilize the UI
     settingDialog = new SSettingDialog(this);
-    sPlotWidget = new SChartWidget(ui->UI_PLOT_WIDGET);
-
+    sPlotWidget = SChartWidget::GetInstance(ui->UI_PLOT_WIDGET);
+    sCore = new sCoreComputation;
     //Bind signal and slots.
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(ON_MENUBAR_ABOUT_CLICKED()));
     connect(ui->menuSetting, SIGNAL(aboutToShow()), settingDialog, SLOT(show()));

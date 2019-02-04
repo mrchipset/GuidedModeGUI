@@ -11,6 +11,7 @@
 #include "sSettingDialog.h"
 #include "cGloabalParam.h"
 #include "sChartWidget.h"
+#include "sCoreComputation.h"
 #include "Tools/sThread.h"
 
 namespace Ui {
@@ -29,7 +30,7 @@ private:
     Ui::SGuidedMode *ui;
     SSettingDialog *settingDialog;
     SChartWidget *sPlotWidget;
-
+    sCoreComputation *sCore;
     QString openedName;
     void loadParams();
     void readParams();
