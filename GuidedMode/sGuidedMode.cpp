@@ -10,16 +10,21 @@ SGuidedMode::SGuidedMode(QWidget *parent) :
 
     //Load the System Setting
     CGloabalParam::loadSysSetting();
+
     //Initilize the UI
     settingDialog = new SSettingDialog(this);
     sPlotWidget = SChartWidget::GetInstance(ui->UI_PLOT_WIDGET);
-    sCore = new sCoreComputation;
+    sCore = new SCoreComputation;
     //Bind signal and slots.
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(ON_MENUBAR_ABOUT_CLICKED()));
     connect(ui->menuSetting, SIGNAL(aboutToShow()), settingDialog, SLOT(show()));
     connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(ON_MENUBAR_ACTION_OPEN()));
     connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(ON_MENUBAR_ACTION_SAVE()));
     connect(ui->actionSave_as, SIGNAL(triggered()), this, SLOT(ON_MENUBAR_ACTION_SAVE_AS()));
+    connect(ui->UI_PB_START, SIGNAL(clicked()), this, SLOT(ON_PROCESS_START_CLICKED()));
+
+    //UI Update SLOTS
+    connect(sCore,SIGNAL(drawBeta(QVector<double>)), this, SLOT(ON_UPDATE_DRAWBETA(QVector<double>)));
 }
 
 
@@ -27,6 +32,8 @@ SGuidedMode::~SGuidedMode()
 {
     //Save the system setting.
     CGloabalParam::saveSysSetting();
+    sCore->stopProcess();
+    delete sCore;
     delete ui;
 }
 
@@ -57,11 +64,6 @@ void SGuidedMode::readParams()
     CGloabalParam::FREQ_PARAM_TYPE = ui->UI_RB_FREQ->isChecked();
     CGloabalParam::GEOMETRY_GRATING_P = ui->UI_LE_GRATING_P->text();
     CGloabalParam::GEOMETRY_WAVEGUIDE_D = ui->UI_LE_WAVEGUID_D->text();
-    ui->UI_RB_REFRACTION->setChecked(!CGloabalParam::DIELEC_PARAM_TYPE);
-    ui->UI_RB_FREQ->setChecked(CGloabalParam::FREQ_PARAM_TYPE);
-    ui->UI_RB_LAMB->setChecked(!CGloabalParam::FREQ_PARAM_TYPE);
-    ui->UI_LE_GRATING_P->setText(CGloabalParam::GEOMETRY_GRATING_P);
-    ui->UI_LE_WAVEGUID_D->setText(CGloabalParam::GEOMETRY_WAVEGUIDE_D);
     CGloabalParam::GLOBAL_PARAM_MUTEX.unlock();
 }
 
@@ -124,3 +126,16 @@ void SGuidedMode::ON_MENUBAR_ACTION_SAVE_AS()
         this->setWindowTitle(QString("Guided Mode Calculator\t Opened: ").append(fileInfo.fileName()));
     }
 }
+
+void SGuidedMode::ON_PROCESS_START_CLICKED()
+{
+    readParams();
+    sCore->startProcess();
+}
+
+void SGuidedMode::ON_UPDATE_DRAWBETA(QVector<double> beta)
+{
+    for(auto var : beta)
+        sPlotWidget->addGratingLine(var);
+}
+

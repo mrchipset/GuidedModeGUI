@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QMetaType>
 #include <QDebug>
 
 #include <qwt_plot.h>
@@ -30,7 +31,7 @@ private:
     Ui::SGuidedMode *ui;
     SSettingDialog *settingDialog;
     SChartWidget *sPlotWidget;
-    sCoreComputation *sCore;
+    SCoreComputation *sCore;
     QString openedName;
     void loadParams();
     void readParams();
@@ -42,7 +43,8 @@ private slots:
     void ON_MENUBAR_ACTION_OPEN();
     void ON_MENUBAR_ACTION_SAVE();
     void ON_MENUBAR_ACTION_SAVE_AS();
-
+    void ON_PROCESS_START_CLICKED();
+    void ON_UPDATE_DRAWBETA(QVector<double> beta);
 };
 
 #endif // SGUIDEDMODE_H

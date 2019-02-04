@@ -23,6 +23,10 @@ SChartWidget::SChartWidget(QWidget *parent) : QWidget(parent)
     mQwtPlot->setAxisTitle(QwtPlot::yLeft, tr("Omiga"));
     mQwtPlot->setAxisTitle(QwtPlot::xBottom, tr("Beta"));
     mQwtPlot->setTitle(tr("Dispersion Curve Chart"));
+    mQwtPlot->setAxisAutoScale(QwtPlot::yLeft);
+    mQwtPlot->setAxisAutoScale(QwtPlot::xBottom);
+    mQwtPlot->setAxisScale(QwtPlot::yLeft,0,1e12);
+    mQwtPlot->setAxisScale(QwtPlot::xBottom,0,1e5);
 
     //Initilize the Qwt Plot Curves
     mQwtScatter = new QwtPlotCurve(tr("Scatter"));

@@ -31,13 +31,11 @@ private:
                     SChartWidget::mInstance->sClean();//Crashed when call deconstructor.
                 SChartWidget::mInstanceMutex.unlock();
                 SChartWidget::mInstance = nullptr;
-
             }
     };
     static GC Gc;
 
 public:
-
     void setSamples(QVector<QPointF> const& samples);
     void addGratingLine(double const x);
     void clearGratingLines();

@@ -1,3 +1,4 @@
+#pragma once
 #include <QThread>
 
 //Define the user function pointer.
@@ -14,7 +15,7 @@ public:
 
 public:
     void sStop(){ isRunning = false; terminate();}
-    void sStart(){ isRunning = true; }
+    void sStart(){ isRunning = true; start();}
     void sSetUserFunc(const pSThreadUserFunc &func) { mFunction = func; }
     void sSetUserParam(void * pParm) { mParam = pParm; }
 
