@@ -7,6 +7,5 @@ int main(int argc, char *argv[])
     qRegisterMetaType<QVector<double>>("QVector<double>");
     SGuidedMode w;
     w.show();
-
     return a.exec();
 }

@@ -14,7 +14,7 @@ public:
     }
 
 public:
-    void sStop(){ isRunning = false; terminate();}
+    void sStop(){ isRunning = false; }//terminate();}
     void sStart(){ isRunning = true; start();}
     void sSetUserFunc(const pSThreadUserFunc &func) { mFunction = func; }
     void sSetUserParam(void * pParm) { mParam = pParm; }

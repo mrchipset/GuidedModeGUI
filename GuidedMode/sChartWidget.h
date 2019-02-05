@@ -38,6 +38,9 @@ private:
 public:
     void setSamples(QVector<QPointF> const& samples);
     void addGratingLine(double const x);
+    void setGratingLines(QVector<double> const & beta);
+    void setBoundaryIndex(QVector<double> const & index);
+    void drawGratingLines();
     void clearGratingLines();
     void sClean();
 private:
@@ -45,12 +48,13 @@ private:
     QwtPlotCurve *mQwtScatter;
     QwtPlotZoomer *mQwtZoomer;
     QwtPlotPicker *mQwtPicker;
-    QMutex mPlotMutex;
     static QMutex mInstanceMutex;
 
 private:
     QVector<double> *mPointXQVec;
     QVector<double> *mPointYQVec;
+    QVector<double> mBetaQVec;
+    QVector<double> mBoundaryIndex;
     QList<QwtPlotMarker*> mGratingLines;
 signals:
 

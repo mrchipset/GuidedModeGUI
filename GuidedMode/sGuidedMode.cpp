@@ -22,9 +22,11 @@ SGuidedMode::SGuidedMode(QWidget *parent) :
     connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(ON_MENUBAR_ACTION_SAVE()));
     connect(ui->actionSave_as, SIGNAL(triggered()), this, SLOT(ON_MENUBAR_ACTION_SAVE_AS()));
     connect(ui->UI_PB_START, SIGNAL(clicked()), this, SLOT(ON_PROCESS_START_CLICKED()));
-
+    connect(ui->UI_PB_TERMINATE, SIGNAL(clicked()), this, SLOT(ON_PROCESS_TERMINATE_CLICKED()));
     //UI Update SLOTS
     connect(sCore,SIGNAL(drawBeta(QVector<double>)), this, SLOT(ON_UPDATE_DRAWBETA(QVector<double>)));
+    connect(sCore, SIGNAL(calcFinished()), this, SLOT(ON_CALC_FINISHED()));
+    connect(sCore, SIGNAL(logging()), this, SLOT(ON_LOGGING()));
 }
 
 
@@ -129,13 +131,30 @@ void SGuidedMode::ON_MENUBAR_ACTION_SAVE_AS()
 
 void SGuidedMode::ON_PROCESS_START_CLICKED()
 {
+    ui->UI_PB_START->setEnabled(false);
     readParams();
     sCore->startProcess();
 }
 
-void SGuidedMode::ON_UPDATE_DRAWBETA(QVector<double> beta)
+void SGuidedMode::ON_PROCESS_TERMINATE_CLICKED()
 {
-    for(auto var : beta)
-        sPlotWidget->addGratingLine(var);
+    ui->UI_PB_START->setEnabled(true);
+    sCore->stopProcess();
 }
 
+void SGuidedMode::ON_UPDATE_DRAWBETA(QVector<double> beta)
+{
+    mPlotMutex.lock();
+    sPlotWidget->drawGratingLines();
+    mPlotMutex.unlock();
+}
+
+void SGuidedMode::ON_CALC_FINISHED()
+{
+    ui->UI_PB_START->setEnabled(true);
+}
+
+void SGuidedMode::ON_LOGGING()
+{
+    ui->UI_TB_LOGGER->append(sCore->Log());
+}

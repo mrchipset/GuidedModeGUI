@@ -45,7 +45,6 @@ SChartWidget::SChartWidget(QWidget *parent) : QWidget(parent)
 
 void SChartWidget::sClean()
 {
-    mPlotMutex.lock();
     //Clear the grating vectical lines.
     //clearGratingLines();
     if(mPointXQVec != nullptr)
@@ -54,8 +53,6 @@ void SChartWidget::sClean()
     if(mPointYQVec != nullptr)
         delete mPointYQVec;
     mPointYQVec = nullptr;
-    mPlotMutex.unlock();
-
 }
 
 SChartWidget::~SChartWidget()
@@ -85,7 +82,6 @@ SChartWidget::~SChartWidget()
 
 void SChartWidget::setSamples(QVector<QPointF> const& samples)
 {
-    mPlotMutex.lock();
     mPointXQVec->resize(samples.size());
     mPointYQVec->resize(samples.size());
     for(int i = 0; i < samples.size(); ++i)
@@ -94,13 +90,11 @@ void SChartWidget::setSamples(QVector<QPointF> const& samples)
         (*mPointYQVec)[i] = samples[i].y();
     }
     mQwtScatter->setSamples(mPointXQVec->data(),mPointYQVec->data(),mPointXQVec->size());
-    mQwtPlot->replot();
-    mPlotMutex.unlock();
+    mQwtPlot->replot();   
 }
 
 void SChartWidget::addGratingLine(double const x)
 {
-    mPlotMutex.lock();
     QwtPlotMarker * pLine = new QwtPlotMarker;
     pLine->setLineStyle(QwtPlotMarker::VLine);
     pLine->setLinePen(QPen(Qt::blue, 1, Qt::DashDotDotLine));
@@ -108,12 +102,11 @@ void SChartWidget::addGratingLine(double const x)
     pLine->attach(mQwtPlot);
     mGratingLines.append(pLine);
     mQwtPlot->replot();
-    mPlotMutex.unlock();
 }
 
 void SChartWidget::clearGratingLines()
 {
-    mPlotMutex.lock();
+
     for(auto var : mGratingLines)
     {
         if(var)
@@ -121,5 +114,32 @@ void SChartWidget::clearGratingLines()
         var = nullptr;
     }
     mGratingLines.clear();
-    mPlotMutex.unlock();
+
+}
+
+void SChartWidget::setGratingLines(QVector<double> const & beta)
+{
+
+    mBetaQVec.clear();
+    mBetaQVec.resize(beta.size());
+    memcpy(mBetaQVec.data(),beta.data(),sizeof(double)*static_cast<unsigned int>(mBetaQVec.size()));
+
+}
+
+void SChartWidget::drawGratingLines()
+{
+
+    //Clear Existed Lines
+    clearGratingLines();
+    //Add new Lines
+    for(auto var : mBetaQVec)
+        addGratingLine(var);
+
+}
+
+void SChartWidget::setBoundaryIndex(QVector<double> const& index)
+{
+    mBoundaryIndex.clear();
+    mBoundaryIndex.resize(index.size());
+    memcpy(mBoundaryIndex.data(), index.data(), sizeof(double)*static_cast<unsigned int>(index.size()));
 }
