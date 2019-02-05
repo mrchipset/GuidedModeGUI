@@ -49,6 +49,7 @@ private slots:
     void ON_UPDATE_DRAWBETA(QVector<double> beta);
     void ON_CALC_FINISHED();
     void ON_LOGGING();
+    void ON_UPDATE_PROGRESS(int p);
 };
 
 #endif // SGUIDEDMODE_H

@@ -20,7 +20,7 @@ SChartWidget::SChartWidget(QWidget *parent) : QWidget(parent)
     mQwtPlot->setCanvasBackground(QBrush(QColor(255,255,255)));
     mQwtPlot->move(0,0);
     mQwtPlot->resize(parent->width(),parent->height());
-    mQwtPlot->setAxisTitle(QwtPlot::yLeft, tr("Omiga"));
+    mQwtPlot->setAxisTitle(QwtPlot::yLeft, tr("Frequency"));
     mQwtPlot->setAxisTitle(QwtPlot::xBottom, tr("Beta"));
     mQwtPlot->setTitle(tr("Dispersion Curve Chart"));
     mQwtPlot->setAxisAutoScale(QwtPlot::yLeft);

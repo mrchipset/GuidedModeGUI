@@ -27,6 +27,7 @@ SGuidedMode::SGuidedMode(QWidget *parent) :
     connect(sCore,SIGNAL(drawBeta(QVector<double>)), this, SLOT(ON_UPDATE_DRAWBETA(QVector<double>)));
     connect(sCore, SIGNAL(calcFinished()), this, SLOT(ON_CALC_FINISHED()));
     connect(sCore, SIGNAL(logging()), this, SLOT(ON_LOGGING()));
+    connect(sCore, SIGNAL(updateProgress(int)), this, SLOT(ON_UPDATE_PROGRESS(int)));
 }
 
 
@@ -157,4 +158,9 @@ void SGuidedMode::ON_CALC_FINISHED()
 void SGuidedMode::ON_LOGGING()
 {
     ui->UI_TB_LOGGER->append(sCore->Log());
+}
+
+void SGuidedMode::ON_UPDATE_PROGRESS(int p)
+{
+    ui->UI_PROGBAR_CALCULATION->setValue(p);
 }
