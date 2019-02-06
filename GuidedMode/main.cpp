@@ -1,6 +1,5 @@
 #include "sGuidedMode.h"
 #include <QApplication>
-#include <armadillo>
 
 int main(int argc, char *argv[])
 {

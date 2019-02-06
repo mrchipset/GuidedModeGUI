@@ -12,7 +12,7 @@ typedef struct S{
     //Dielectric Constant
     QMutex mutex;
     int i;
-    int progress;
+    volatile int progress;
     double n1;
     double n2;
     double n3;

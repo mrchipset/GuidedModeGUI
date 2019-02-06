@@ -120,15 +120,16 @@ int SCoreComputation::sCoreFunc(void * pParam, bool const & bRunning)
             var->sStart();
             QThread::msleep(10);
         }
-
+        int i = 0;
         while(bRunning && sParam->mProgress < 100)
         {
             sParam->calcProgress();
             emit(sParam->updateProgress(sParam->mProgress));
-            qDebug()<<"mProgress:"<<sParam->mProgress;
+            //qDebug()<<"mProgress:"<<sParam->mProgress;
+            i++;
             QThread::msleep(500);
         }
-
+        qDebug()<<"Used Time:"<<i/2<<"s";
         emit(sParam->calcFinished());
         sParam->cleanWorker();
         sParam->mCoreMutex.unlock();
@@ -173,18 +174,28 @@ void SCoreComputation::CWorker::run()
         const double f2 = pParam->pCoreParam[mTaskId]->f2;
         const double fa = pParam->pCoreParam[mTaskId]->fa;
 
-        arma::vec theta, kapa, delta, gamma;
+        arma::vec theta;
+        arma::vec kapa, delta, gamma;
+        arma::vec func;
         double lam, k;
         theta = arma::linspace(0,arma::datum::pi/2,10000);
         for(double f = f1; f < f2 && isRunning; f+=fa)
         {
             lam = arma::datum::c_0 / f;
             k = 2 * arma::datum::pi / lam;
-            kapa = n1*k*arma::sin(theta);
-            gamma = arma::sqrt((n1*n1-n2*n2)*k*k-kapa%kapa);
-            delta = arma::sqrt((n1*n1-n3*n3)*k*k-kapa%kapa);
-            pParam->pCoreParam[mTaskId]->progress = static_cast<int>((f-f1) * 100 / (f2-f1));
+            kapa = n2*k*arma::sin(theta);
+            gamma = arma::sqrt((n2*n2-n1*n1)*k*k-kapa%kapa);
+            delta = arma::sqrt((n2*n2-n3*n3)*k*k-kapa%kapa);
+            func = arma::tan(arma::sin(theta)*d*n2*k) - (n2*n2*kapa*d) % (n3*n3*gamma+n1*n1*delta)*d
+                    / (n1*n1*n3*n3*(kapa%kapa)*d*d - n2*n2*n2*n2*(gamma%delta)*d*d);
+            func = arma::abs(func);
+            arma::uvec index = arma::find(func<1e-4);
+            //qDebug()<<"Freq: "<<f<<"Hz\tMin Value: "<<func.min()<<"\tThreshold Size: "<<index.size();
             //To-Do
+            //Implement a filter to find useful theta;
+            //Convbert index into theta use formula beta = n*k*cos(theta);
+
+            pParam->pCoreParam[mTaskId]->progress = static_cast<int>((f-f1) * 100 / (f2-f1));
         }
         qDebug()<<"Thread: "<<mTaskId<<"Finished";
     }
