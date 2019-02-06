@@ -24,7 +24,7 @@ SGuidedMode::SGuidedMode(QWidget *parent) :
     connect(ui->UI_PB_START, SIGNAL(clicked()), this, SLOT(ON_PROCESS_START_CLICKED()));
     connect(ui->UI_PB_TERMINATE, SIGNAL(clicked()), this, SLOT(ON_PROCESS_TERMINATE_CLICKED()));
     //UI Update SLOTS
-    connect(sCore,SIGNAL(drawBeta(QVector<double>)), this, SLOT(ON_UPDATE_DRAWBETA(QVector<double>)));
+    connect(sCore,SIGNAL(drawBeta()), this, SLOT(ON_UPDATE_DRAWBETA()));
     connect(sCore, SIGNAL(calcFinished()), this, SLOT(ON_CALC_FINISHED()));
     connect(sCore, SIGNAL(logging()), this, SLOT(ON_LOGGING()));
     connect(sCore, SIGNAL(updateProgress(int)), this, SLOT(ON_UPDATE_PROGRESS(int)));
@@ -134,6 +134,9 @@ void SGuidedMode::ON_PROCESS_START_CLICKED()
 {
     ui->UI_PB_START->setEnabled(false);
     readParams();
+    mPlotMutex.lock();
+    sPlotWidget->clearGraph();
+    mPlotMutex.unlock();
     sCore->startProcess();
 }
 
@@ -143,7 +146,7 @@ void SGuidedMode::ON_PROCESS_TERMINATE_CLICKED()
     sCore->stopProcess();
 }
 
-void SGuidedMode::ON_UPDATE_DRAWBETA(QVector<double> beta)
+void SGuidedMode::ON_UPDATE_DRAWBETA()
 {
     mPlotMutex.lock();
     sPlotWidget->drawGratingLines();
@@ -153,6 +156,9 @@ void SGuidedMode::ON_UPDATE_DRAWBETA(QVector<double> beta)
 void SGuidedMode::ON_CALC_FINISHED()
 {
     ui->UI_PB_START->setEnabled(true);
+    mPlotMutex.lock();
+    sPlotWidget->setSamples();
+    mPlotMutex.unlock();
 }
 
 void SGuidedMode::ON_LOGGING()

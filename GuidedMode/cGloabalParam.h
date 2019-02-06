@@ -25,6 +25,7 @@ public:
     static int FREQ_ACCURACY;
     static int SAVE_DATA_PTS;
     static int SYSTEM_LANG;
+    static int ZERO_THRESHOLD;
 
     //Use strings to store the data preparing for the parametric sweep implementation.
     //Dielectric parameters.

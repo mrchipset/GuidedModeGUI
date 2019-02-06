@@ -6,6 +6,7 @@ int CGloabalParam::COCURRENT;
 int CGloabalParam::FREQ_ACCURACY;
 int CGloabalParam::SAVE_DATA_PTS;
 int CGloabalParam::SYSTEM_LANG;
+int CGloabalParam::ZERO_THRESHOLD;
 
 //Use strings to store the data preparing for the parametric sweep implementation.
 //Dielectric parameters.
@@ -92,6 +93,7 @@ void CGloabalParam::saveSysSetting()
         jsonData["FREQ_ACCURACY"] = FREQ_ACCURACY;
         jsonData["SAVE_DATA_PTS"] = SAVE_DATA_PTS;
         jsonData["SYSTEM_LANG"] = SYSTEM_LANG;
+        jsonData["ZERO_THRESHOLD"] = ZERO_THRESHOLD;
         GLOBAL_PARAM_MUTEX.unlock();
         saveData.write(QJsonDocument(jsonData).toBinaryData());
     } catch (...) {
@@ -112,6 +114,7 @@ void CGloabalParam::loadSysSetting()
         FREQ_ACCURACY = jsonData["FREQ_ACCURACY"].toInt();
         SAVE_DATA_PTS = jsonData["SAVE_DATA_PTS"].toInt();
         SYSTEM_LANG = jsonData["SYSTEM_LANG"].toInt();
+        ZERO_THRESHOLD = jsonData["ZERO_THRESHOLD"].toInt();
         GLOBAL_PARAM_MUTEX.unlock();
     } catch (...) {
         qDebug()<<"Load System Setting error occured.";

@@ -46,7 +46,7 @@ private slots:
     void ON_MENUBAR_ACTION_SAVE_AS();
     void ON_PROCESS_START_CLICKED();
     void ON_PROCESS_TERMINATE_CLICKED();
-    void ON_UPDATE_DRAWBETA(QVector<double> beta);
+    void ON_UPDATE_DRAWBETA();
     void ON_CALC_FINISHED();
     void ON_LOGGING();
     void ON_UPDATE_PROGRESS(int p);

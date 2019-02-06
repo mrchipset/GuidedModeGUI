@@ -93,6 +93,20 @@ void SChartWidget::setSamples(QVector<QPointF> const& samples)
     mQwtPlot->replot();   
 }
 
+void SChartWidget::setSamples()
+{
+    mQwtScatter->setSamples(mPointXQVec->data(),mPointYQVec->data(),mPointXQVec->size());
+    mQwtPlot->replot();
+}
+
+void SChartWidget::setPlotData(QVector<double> const& Beta, QVector<double> const& F)
+{
+    mPointXQVec->resize(Beta.size());
+    mPointYQVec->resize(F.size());
+    memcpy(mPointXQVec->data(), Beta.data(), sizeof(double)*static_cast<unsigned int>(Beta.size()));
+    memcpy(mPointYQVec->data(), F.data(), sizeof(double)*static_cast<unsigned int>(F.size()));
+}
+
 void SChartWidget::addGratingLine(double const x)
 {
     QwtPlotMarker * pLine = new QwtPlotMarker;

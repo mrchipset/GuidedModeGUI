@@ -9,10 +9,11 @@
 #include "Tools/sThread.h"
 
 typedef struct S{
-    //Dielectric Constant
     QMutex mutex;
     int i;
     volatile int progress;
+    double zS; //Zero Threshold
+    //Dielectric Constant
     double n1;
     double n2;
     double n3;
@@ -23,13 +24,16 @@ typedef struct S{
     //Geometry Parmeters.
     double d;
     double p;
+    QVector<double> * dVecF;
+    QVector<double> * dVecBeta;
 
 public:
-    S(int i, double n1, double n2, double n3, double f1,
+    S(int i, double zS, double n1, double n2, double n3, double f1,
       double f2, double fa, double d, double p)
     {
         this->progress = 0;
         this->i = i;
+        this->zS = zS;
         this->n1 = n1;
         this->n2 = n2;
         this->n3 = n3;
@@ -38,6 +42,8 @@ public:
         this->fa = fa;
         this->d = d;
         this->p = p;
+        this->dVecF = new QVector<double>();
+        this->dVecBeta = new QVector<double>();
     }
 }CoreParam;
 
@@ -56,7 +62,7 @@ public:
     }
     inline QString Log() const {return mLogger;}
 signals:
-    void drawBeta(QVector<double>);
+    void drawBeta();
     void calcFinished();
     void logging();
     void updateProgress(int p);
@@ -135,8 +141,12 @@ private:
     double mDielecParam2;
     double mDielecParam3;
 
+    double mZeroThreshold;
     int mWorkingThreads;
     volatile int mProgress;
+
+    QVector<double> mQVecBeta;
+    QVector<double> mQVecF;
     QList<CoreParam*> pCoreParam;
     QList<CWorker *> pSThread;
     QMutex mCoreMutex;

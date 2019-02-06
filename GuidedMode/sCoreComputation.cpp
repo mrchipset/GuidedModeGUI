@@ -84,7 +84,10 @@ void SCoreComputation::loadParam()
         mWaveGuideD = CGloabalParam::GEOMETRY_WAVEGUIDE_D.toDouble();
         mK = 2 * arma::datum::pi / mFreqParam;
         mWorkingThreads = 1<<CGloabalParam::COCURRENT;
+
+        mZeroThreshold = 0.01 / pow(10,CGloabalParam::ZERO_THRESHOLD);
         qDebug()<<"mWorkingThreads: "<<mWorkingThreads;
+        qDebug()<<"mZeroThreshold: "<<mZeroThreshold;
         CGloabalParam::GLOBAL_PARAM_MUTEX.unlock();
     }
 }
@@ -103,11 +106,11 @@ int SCoreComputation::sCoreFunc(void * pParam, bool const & bRunning)
         sParam->mChartWidget->setGratingLines(sParam->mGratingBeta);
         sParam->addBoundaries();
         sParam->mChartWidget->setBoundaryIndex(sParam->mBoundaryIndex);
-        emit(sParam->drawBeta(sParam->mGratingBeta));
+        emit(sParam->drawBeta());
         //Arrange Task; Will be an function in future;
         double step = sParam->mFreqParam / sParam->mWorkingThreads;
         for(int i=0;i<sParam->mWorkingThreads;i++)
-            sParam->pCoreParam.append(new CoreParam(i,sParam->mDielecParam1,sParam->mDielecParam2,
+            sParam->pCoreParam.append(new CoreParam(i,sParam->mZeroThreshold, sParam->mDielecParam1,sParam->mDielecParam2,
                                                 sParam->mDielecParam3,i*step,(i+1)*step,0.0001e12,
                                                 sParam->mWaveGuideD,sParam->mGratingPeroid));
         qDebug()<<"pCoreParam Size: "<<sParam->pCoreParam.size();
@@ -129,6 +132,19 @@ int SCoreComputation::sCoreFunc(void * pParam, bool const & bRunning)
             i++;
             QThread::msleep(500);
         }
+        int finished = 0;
+        while(bRunning && finished<sParam->mWorkingThreads)
+        {
+            for(auto var : sParam->pCoreParam)
+                if(var->mutex.tryLock(50))
+                {
+
+                    finished++;
+                    sParam->mQVecBeta.append(*var->dVecBeta);
+                    sParam->mQVecF.append(*var->dVecF);
+                }
+        }
+        sParam->mChartWidget->setPlotData(sParam->mQVecBeta,sParam->mQVecF);
         qDebug()<<"Used Time:"<<i/2<<"s";
         emit(sParam->calcFinished());
         sParam->cleanWorker();
@@ -153,7 +169,7 @@ void SCoreComputation::CWorker::run()
                 for(auto var : pParam->pCoreParam)
                 {
                     qDebug()<<var->i;
-                    if(var->mutex.tryLock())
+                    if(var->mutex.tryLock(5))
                     {
                         mTaskId = var->i;
                         break;
@@ -169,15 +185,19 @@ void SCoreComputation::CWorker::run()
         const double n2 = pParam->pCoreParam[mTaskId]->n2;
         const double n3 = pParam->pCoreParam[mTaskId]->n3;
         const double d = pParam->pCoreParam[mTaskId]->d;
-        const double p = pParam->pCoreParam[mTaskId]->p;
+        //const double p = pParam->pCoreParam[mTaskId]->p;
         const double f1 = pParam->pCoreParam[mTaskId]->f1;
         const double f2 = pParam->pCoreParam[mTaskId]->f2;
         const double fa = pParam->pCoreParam[mTaskId]->fa;
-
+        const double zs = pParam->pCoreParam[mTaskId]->zS;
+        const int ts = 100000; //size of theta vec
+        const int ds = static_cast<int>(ts * 0.005); //min ds 0.5% for ts
         arma::vec theta;
         arma::vec kapa, delta, gamma;
         arma::vec func;
+
         double lam, k;
+        double dTheta, dBeta;
         theta = arma::linspace(0,arma::datum::pi/2,10000);
         for(double f = f1; f < f2 && isRunning; f+=fa)
         {
@@ -189,15 +209,69 @@ void SCoreComputation::CWorker::run()
             func = arma::tan(arma::sin(theta)*d*n2*k) - (n2*n2*kapa*d) % (n3*n3*gamma+n1*n1*delta)*d
                     / (n1*n1*n3*n3*(kapa%kapa)*d*d - n2*n2*n2*n2*(gamma%delta)*d*d);
             func = arma::abs(func);
-            arma::uvec index = arma::find(func<1e-4);
-            //qDebug()<<"Freq: "<<f<<"Hz\tMin Value: "<<func.min()<<"\tThreshold Size: "<<index.size();
-            //To-Do
+
+            //To-Do 2019.02.06
             //Implement a filter to find useful theta;
             //Convbert index into theta use formula beta = n*k*cos(theta);
 
+
+            arma::uvec index = arma::find(func<zs);
+            //Omit the first element, zero, for calculation convenience.
+            if(index.size()>1)
+            {
+                index = index.subvec(1,index.size()-1);
+                arma::uword flag = 0;
+                for(arma::uword i = 0; i < index.size(); i++)
+                {
+                    if(i+1<index.size())
+                    {
+                        if(index[i+1]>index[i])
+                        {
+                            if(index[i+1]-index[i]<ds)
+                            {
+                                flag++;
+                            }
+                            else
+                            {
+                                dTheta = (theta[index[i]]+theta[index[i-flag]])/2;
+                                dBeta = n2 * k * cos(dTheta);
+                                flag = 0;
+                                pParam->pCoreParam[mTaskId]->dVecF->push_back(f);
+                                pParam->pCoreParam[mTaskId]->dVecBeta->push_back(dBeta);
+                            }
+                        }
+                        else
+                        {
+                            if(index[i]-index[i+1]<ds)
+                            {
+                                flag++;
+                            }
+                            else
+                            {
+                                dTheta = (theta[index[i]]+theta[index[i-flag]])/2;
+                                dBeta = n2 * k * cos(dTheta);
+                                flag = 0;
+                                pParam->pCoreParam[mTaskId]->dVecF->push_back(f);
+                                pParam->pCoreParam[mTaskId]->dVecBeta->push_back(dBeta);
+                            }
+                        }
+
+                    }
+                }
+            }
+
             pParam->pCoreParam[mTaskId]->progress = static_cast<int>((f-f1) * 100 / (f2-f1));
         }
-        qDebug()<<"Thread: "<<mTaskId<<"Finished";
+        //for(int i = 0; i < pParam->pCoreParam[mTaskId]->dVecF->size(); i++)
+        //    qDebug()<<"F:"<<(*pParam->pCoreParam[mTaskId]->dVecF)[i]<<"\tBeta: "<<(*pParam->pCoreParam[mTaskId]->dVecBeta)[i];
+        qDebug()<<"Thread: "<<mTaskId<<"Finished\tGet Result Size: "<<pParam->pCoreParam[mTaskId]->dVecF->size();
+        /*
+        for(int i = 0; i < pParam->pCoreParam[mTaskId]->dVecF->size(); i++)
+        {
+            qDebug()<<"F:"<<(*pParam->pCoreParam[mTaskId]->dVecF)[i]<<"\tBeta:"<<(*pParam->pCoreParam[mTaskId]->dVecBeta)[i];
+        }
+        */
+        pParam->pCoreParam[mTaskId]->mutex.unlock();
     }
 }
 

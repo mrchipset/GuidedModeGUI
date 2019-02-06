@@ -37,11 +37,20 @@ private:
 
 public:
     void setSamples(QVector<QPointF> const& samples);
+    void setSamples();
+    void clearGraph(){
+        mPointXQVec->clear();
+        mPointYQVec->clear();
+        setSamples();
+        clearGratingLines();
+    }
     void addGratingLine(double const x);
     void setGratingLines(QVector<double> const & beta);
     void setBoundaryIndex(QVector<double> const & index);
     void drawGratingLines();
     void clearGratingLines();
+    void setPlotData(QVector<double> const& Beta, QVector<double> const& F);
+
     void sClean();
 private:
     QwtPlot *mQwtPlot;
