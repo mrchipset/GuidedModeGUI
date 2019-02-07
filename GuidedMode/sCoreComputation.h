@@ -135,6 +135,7 @@ private:
     double mGratingPeroid;
     double mWaveGuideD;
     double mFreqParam;
+    double mFreqStep;
     double mK;
 
     double mDielecParam1;

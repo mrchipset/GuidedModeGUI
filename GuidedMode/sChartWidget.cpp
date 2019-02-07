@@ -90,12 +90,16 @@ void SChartWidget::setSamples(QVector<QPointF> const& samples)
         (*mPointYQVec)[i] = samples[i].y();
     }
     mQwtScatter->setSamples(mPointXQVec->data(),mPointYQVec->data(),mPointXQVec->size());
+    mQwtPlot->setAxisScale(QwtPlot::yLeft,0,*std::max_element(mPointYQVec->begin(),mPointYQVec->end()));
+    mQwtPlot->setAxisScale(QwtPlot::xBottom,0,*std::max_element(mPointXQVec->begin(),mPointXQVec->end()));
     mQwtPlot->replot();   
 }
 
 void SChartWidget::setSamples()
 {
     mQwtScatter->setSamples(mPointXQVec->data(),mPointYQVec->data(),mPointXQVec->size());
+    mQwtPlot->setAxisScale(QwtPlot::yLeft,0,*std::max_element(mPointYQVec->begin(),mPointYQVec->end()));
+    mQwtPlot->setAxisScale(QwtPlot::xBottom,0,*std::max_element(mPointXQVec->begin(),mPointXQVec->end()));
     mQwtPlot->replot();
 }
 
@@ -156,4 +160,25 @@ void SChartWidget::setBoundaryIndex(QVector<double> const& index)
     mBoundaryIndex.clear();
     mBoundaryIndex.resize(index.size());
     memcpy(mBoundaryIndex.data(), index.data(), sizeof(double)*static_cast<unsigned int>(index.size()));
+}
+
+void SChartWidget::drawBoundaryIndex()
+{
+    clearBoundaryIndex();
+    Qt::GlobalColor color[] = {Qt::GlobalColor::magenta,Qt::GlobalColor::red,Qt::GlobalColor::yellow};
+    for(int i =0; i<mBoundaryIndex.size(); i++)
+    {
+        QwtPlotCurve * plotCurve = new QwtPlotCurve("Index");
+        plotCurve->attach(mQwtPlot);
+        plotCurve->setStyle(QwtPlotCurve::Lines);
+        plotCurve->setPen(QPen(color[i]));
+        double mX[2],mY[2];
+        mX[0] = 0;
+        mY[0] = 0;
+        mX[1] = *std::max_element(mPointXQVec->begin(),mPointXQVec->end());
+        mY[1] = mX[1] * mBoundaryIndex[i] / 2 / arma::datum::pi;
+        plotCurve->setSamples(mX,mY,2);
+        mMatterCurveList.append(plotCurve);
+    }
+    mQwtPlot->replot();
 }

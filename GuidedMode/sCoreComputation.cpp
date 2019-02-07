@@ -79,15 +79,17 @@ void SCoreComputation::loadParam()
             mFreqParam = arma::datum::c_0 / CGloabalParam::FREQ_PARAM_VALUE.toDouble();
         else
             mFreqParam = CGloabalParam::FREQ_PARAM_VALUE.toDouble();
+        mFreqStep = 0.001 / pow(10,CGloabalParam::FREQ_ACCURACY);
 
         mGratingPeroid = CGloabalParam::GEOMETRY_GRATING_P.toDouble();
         mWaveGuideD = CGloabalParam::GEOMETRY_WAVEGUIDE_D.toDouble();
         mK = 2 * arma::datum::pi / mFreqParam;
         mWorkingThreads = 1<<CGloabalParam::COCURRENT;
 
-        mZeroThreshold = 0.01 / pow(10,CGloabalParam::ZERO_THRESHOLD);
+        mZeroThreshold = 3 - CGloabalParam::ZERO_THRESHOLD;
         qDebug()<<"mWorkingThreads: "<<mWorkingThreads;
         qDebug()<<"mZeroThreshold: "<<mZeroThreshold;
+        qDebug()<<"mFreqStep: "<<mFreqStep;
         CGloabalParam::GLOBAL_PARAM_MUTEX.unlock();
     }
 }
@@ -111,7 +113,7 @@ int SCoreComputation::sCoreFunc(void * pParam, bool const & bRunning)
         double step = sParam->mFreqParam / sParam->mWorkingThreads;
         for(int i=0;i<sParam->mWorkingThreads;i++)
             sParam->pCoreParam.append(new CoreParam(i,sParam->mZeroThreshold, sParam->mDielecParam1,sParam->mDielecParam2,
-                                                sParam->mDielecParam3,i*step,(i+1)*step,0.0001e12,
+                                                sParam->mDielecParam3,i*step,(i+1)*step,sParam->mFreqStep*sParam->mFreqParam,
                                                 sParam->mWaveGuideD,sParam->mGratingPeroid));
         qDebug()<<"pCoreParam Size: "<<sParam->pCoreParam.size();
         for(int i=0;i<sParam->mWorkingThreads;i++)
@@ -133,6 +135,8 @@ int SCoreComputation::sCoreFunc(void * pParam, bool const & bRunning)
             QThread::msleep(500);
         }
         int finished = 0;
+        sParam->mQVecBeta.clear();
+        sParam->mQVecF.clear();
         while(bRunning && finished<sParam->mWorkingThreads)
         {
             for(auto var : sParam->pCoreParam)
@@ -190,7 +194,7 @@ void SCoreComputation::CWorker::run()
         const double f2 = pParam->pCoreParam[mTaskId]->f2;
         const double fa = pParam->pCoreParam[mTaskId]->fa;
         const double zs = pParam->pCoreParam[mTaskId]->zS;
-        const int ts = 100000; //size of theta vec
+        const int ts = 50000; //size of theta vec
         const int ds = static_cast<int>(ts * 0.005); //min ds 0.5% for ts
         arma::vec theta;
         arma::vec kapa, delta, gamma;
@@ -198,7 +202,7 @@ void SCoreComputation::CWorker::run()
 
         double lam, k;
         double dTheta, dBeta;
-        theta = arma::linspace(0,arma::datum::pi/2,10000);
+        theta = arma::linspace(0,arma::datum::pi/2,ts);
         for(double f = f1; f < f2 && isRunning; f+=fa)
         {
             lam = arma::datum::c_0 / f;
@@ -217,9 +221,8 @@ void SCoreComputation::CWorker::run()
 
             arma::uvec index = arma::find(func<zs);
             //Omit the first element, zero, for calculation convenience.
-            if(index.size()>1)
+            if(index.size()>0)
             {
-                index = index.subvec(1,index.size()-1);
                 arma::uword flag = 0;
                 for(arma::uword i = 0; i < index.size(); i++)
                 {

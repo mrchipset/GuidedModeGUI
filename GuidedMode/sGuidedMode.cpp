@@ -158,6 +158,7 @@ void SGuidedMode::ON_CALC_FINISHED()
     ui->UI_PB_START->setEnabled(true);
     mPlotMutex.lock();
     sPlotWidget->setSamples();
+    sPlotWidget->drawBoundaryIndex();
     mPlotMutex.unlock();
 }
 

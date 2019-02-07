@@ -14,6 +14,8 @@
 #include <qwt_plot_zoomer.h>
 #include <qwt_plot_picker.h>
 
+#include <armadillo>
+
 class SChartWidget : public QWidget
 {
     Q_OBJECT
@@ -43,10 +45,22 @@ public:
         mPointYQVec->clear();
         setSamples();
         clearGratingLines();
+        clearBoundaryIndex();
     }
     void addGratingLine(double const x);
     void setGratingLines(QVector<double> const & beta);
     void setBoundaryIndex(QVector<double> const & index);
+    void drawBoundaryIndex();
+    void clearBoundaryIndex()
+    {
+        for(auto var : mMatterCurveList)
+            if(var)
+            {
+                delete var;
+                var = nullptr;
+            }
+        mMatterCurveList.clear();
+    }
     void drawGratingLines();
     void clearGratingLines();
     void setPlotData(QVector<double> const& Beta, QVector<double> const& F);
@@ -55,6 +69,7 @@ public:
 private:
     QwtPlot *mQwtPlot;
     QwtPlotCurve *mQwtScatter;
+    QList<QwtPlotCurve*> mMatterCurveList;
     QwtPlotZoomer *mQwtZoomer;
     QwtPlotPicker *mQwtPicker;
     static QMutex mInstanceMutex;
