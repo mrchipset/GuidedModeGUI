@@ -7,15 +7,18 @@
 #include <QVector>
 #include <QList>
 #include <QPointF>
+#include <QFileDialog>
 
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 #include <qwt_plot_marker.h>
 #include <qwt_plot_zoomer.h>
 #include <qwt_plot_picker.h>
+#include <qwt_plot_renderer.h>
 
 #include <armadillo>
 
+#include "cGloabalParam.h"
 class SChartWidget : public QWidget
 {
     Q_OBJECT
@@ -66,6 +69,12 @@ public:
     void setPlotData(QVector<double> const& Beta, QVector<double> const& F);
 
     void sClean();
+
+public slots:
+    void exportPNG();
+    void exportTXT();
+    void exportCSV();
+
 private:
     QwtPlot *mQwtPlot;
     QwtPlotCurve *mQwtScatter;

@@ -23,6 +23,9 @@ SGuidedMode::SGuidedMode(QWidget *parent) :
     connect(ui->actionSave_as, SIGNAL(triggered()), this, SLOT(ON_MENUBAR_ACTION_SAVE_AS()));
     connect(ui->UI_PB_START, SIGNAL(clicked()), this, SLOT(ON_PROCESS_START_CLICKED()));
     connect(ui->UI_PB_TERMINATE, SIGNAL(clicked()), this, SLOT(ON_PROCESS_TERMINATE_CLICKED()));
+    connect(ui->actionPNG, SIGNAL(triggered()), sPlotWidget, SLOT(exportPNG()));
+    connect(ui->actionTXT, SIGNAL(triggered()), sPlotWidget, SLOT(exportTXT()));
+    connect(ui->actionCSV, SIGNAL(triggered()), sPlotWidget, SLOT(exportCSV()));
     //UI Update SLOTS
     connect(sCore,SIGNAL(drawBeta()), this, SLOT(ON_UPDATE_DRAWBETA()));
     connect(sCore, SIGNAL(calcFinished()), this, SLOT(ON_CALC_FINISHED()));
@@ -133,6 +136,7 @@ void SGuidedMode::ON_MENUBAR_ACTION_SAVE_AS()
 void SGuidedMode::ON_PROCESS_START_CLICKED()
 {
     ui->UI_PB_START->setEnabled(false);
+    ui->menuExport->setEnabled(false);
     readParams();
     mPlotMutex.lock();
     sPlotWidget->clearGraph();
@@ -156,6 +160,7 @@ void SGuidedMode::ON_UPDATE_DRAWBETA()
 void SGuidedMode::ON_CALC_FINISHED()
 {
     ui->UI_PB_START->setEnabled(true);
+    ui->menuExport->setEnabled(true);
     mPlotMutex.lock();
     sPlotWidget->setSamples();
     sPlotWidget->drawBoundaryIndex();

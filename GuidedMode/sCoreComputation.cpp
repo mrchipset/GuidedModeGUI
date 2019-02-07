@@ -60,6 +60,15 @@ void SCoreComputation::buildLog()
     emit(logging());
 }
 
+void SCoreComputation::buildEndLog(int t)
+{
+    mLogger.clear();
+    mLogger.append("---------------Input Parameters---------------\n");
+    mLogger.append("Working Threads: ").append(QString::number(mWorkingThreads)).append("\n");
+    mLogger.append("Calculation Used Time: ").append(QString::number(t)).append(" s\n");
+
+    emit(logging());
+}
 void SCoreComputation::loadParam()
 {
     if(CGloabalParam::GLOBAL_PARAM_MUTEX.tryLock(50))
@@ -149,6 +158,7 @@ int SCoreComputation::sCoreFunc(void * pParam, bool const & bRunning)
                 }
         }
         sParam->mChartWidget->setPlotData(sParam->mQVecBeta,sParam->mQVecF);
+        sParam->buildEndLog(i/2);
         qDebug()<<"Used Time:"<<i/2<<"s";
         emit(sParam->calcFinished());
         sParam->cleanWorker();
@@ -181,10 +191,10 @@ void SCoreComputation::CWorker::run()
                 }
                 pParam->mTaskMutex.unlock();
             }
-            qDebug()<<"Now TaskId:"<<mTaskId;
+            //qDebug()<<"Now TaskId:"<<mTaskId;
             QThread::msleep(100);
         }
-        qDebug()<<"Thread: "<<mTaskId<<"Working";
+        //qDebug()<<"Thread: "<<mTaskId<<"Working";
         const double n1 = pParam->pCoreParam[mTaskId]->n1;
         const double n2 = pParam->pCoreParam[mTaskId]->n2;
         const double n3 = pParam->pCoreParam[mTaskId]->n3;

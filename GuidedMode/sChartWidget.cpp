@@ -182,3 +182,62 @@ void SChartWidget::drawBoundaryIndex()
     }
     mQwtPlot->replot();
 }
+
+void SChartWidget::exportPNG()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Export PNG"), QDir::currentPath(), ".png");
+    if(!fileName.isEmpty())
+    {
+        QwtPlotRenderer render;
+        render.setDiscardFlag(QwtPlotRenderer::DiscardBackground,false);
+        render.renderDocument(mQwtPlot,fileName.append(".png"),QSize(800,400),85);
+    }
+}
+
+void SChartWidget::exportTXT()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Export TXT"), QDir::currentPath(), ".txt");
+    if(!fileName.isEmpty())
+    {
+        QFile file(fileName.append(".txt"));
+        if(file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate))
+        {
+            QTextStream out(&file);
+            out<<"d: "<<CGloabalParam::GEOMETRY_WAVEGUIDE_D<<" m\n";
+            out<<"p: "<<CGloabalParam::GEOMETRY_GRATING_P<<" m\n";
+            out<<"n1: "<<CGloabalParam::DIELEC_PARAM_1<<"\n";
+            out<<"n2: "<<CGloabalParam::DIELEC_PARAM_2<<"\n";
+            out<<"n3: "<<CGloabalParam::DIELEC_PARAM_3<<"\n";
+            out<<"----------------DATA---------------\nBeta\t\tFreq\n";
+            for(int i = 0; i < mPointXQVec->size(); i++)
+                out<<(*mPointXQVec)[i]<<"\t"<<(*mPointYQVec)[i]<<"\n";
+            out.flush();
+            file.flush();
+            file.close();
+        }
+    }
+}
+
+void SChartWidget::exportCSV()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Export CSV"), QDir::currentPath(), ".csv");
+    if(!fileName.isEmpty())
+    {
+        QFile file(fileName.append(".csv"));
+        if(file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate))
+        {
+            QTextStream out(&file);
+            out<<"d: "<<CGloabalParam::GEOMETRY_WAVEGUIDE_D<<" m\n";
+            out<<"p: "<<CGloabalParam::GEOMETRY_GRATING_P<<" m\n";
+            out<<"n1: "<<CGloabalParam::DIELEC_PARAM_1<<"\n";
+            out<<"n2: "<<CGloabalParam::DIELEC_PARAM_2<<"\n";
+            out<<"n3: "<<CGloabalParam::DIELEC_PARAM_3<<"\n";
+            out<<"----------------DATA---------------\nBeta,Freq\n";
+            for(int i = 0; i < mPointXQVec->size(); i++)
+                out<<(*mPointXQVec)[i]<<","<<(*mPointYQVec)[i]<<"\n";
+            out.flush();
+            file.flush();
+            file.close();
+        }
+    }
+}

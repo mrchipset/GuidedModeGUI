@@ -73,6 +73,7 @@ private:
     void addBoundary(double const& n);
     void addBoundaries();
     void buildLog();
+    void buildEndLog(int t);
     void calcProgress()
     {
         int sum = 0;
