@@ -545,7 +545,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Version 0.01</string>
+    <string>Version 0.5 Beta</string>
    </property>
   </action>
   <action name="actionAbout">
